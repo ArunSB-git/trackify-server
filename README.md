@@ -1,7 +1,7 @@
 
 ---
 
-# 📕 Backend README (Trackify Server)
+# 📕 Trackify - Backend (Server)
 
 ```md
 # 🚀 Trackify – Backend (Server)
