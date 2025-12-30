@@ -2,6 +2,7 @@ package com.app.config;
 
 
 import com.app.service.OAuth2LoginSuccessHandler;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,12 +23,20 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .cors(cors -> {
-                }) // empty lambda works as default
-
+                .cors(cors -> {})
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((req, res, authEx) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"authenticated\":false}");
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/oauth2/**","/api/session-check").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(
+                                "/",
+                                "/oauth2/**",
+                                "/api/session-check"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth -> oauth
@@ -36,4 +45,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }
