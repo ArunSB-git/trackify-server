@@ -11,7 +11,7 @@ It provides authentication, session management, and REST APIs for habit tracking
 
 ---
 
-## 🌐 API Reference
+## 📑 API Reference
 
 - **Swagger UI URL:** https://trackify-server-ireb.onrender.com/swagger-ui/index.html
 
