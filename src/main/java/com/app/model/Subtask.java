@@ -1,30 +1,26 @@
 package com.app.model;
 
-
-
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
-import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
-@Table(name = "tasks")
+@Table(name = "subtasks")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Task {
+public class Subtask {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "task_id", nullable = false)
+    private Task task;
 
     @Column(nullable = false)
     private String title;
@@ -34,8 +30,4 @@ public class Task {
 
     @Column(name = "is_active")
     private Boolean isActive = true;
-
-    // ✅ NEW FIELD
-    @Column(name = "has_subtasks", nullable = false)
-    private Boolean hasSubtasks = false;
 }

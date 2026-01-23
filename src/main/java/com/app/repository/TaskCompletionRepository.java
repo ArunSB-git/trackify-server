@@ -49,6 +49,7 @@ public interface TaskCompletionRepository extends JpaRepository<TaskCompletions,
 
     List<TaskCompletions> findByTaskUser(User user);
 
+    long countByTaskUser(User user);
 
 
 }

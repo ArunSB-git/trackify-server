@@ -1,5 +1,7 @@
 package com.app.controller;
 
+import com.app.dto.InsightsResponse;
+import com.app.dto.TaskFullStatsResponse;
 import com.app.dto.TaskResponse;
 import com.app.dto.TaskStatsResponse;
 import com.app.model.Task;
@@ -36,9 +38,13 @@ public class TaskController {
 
     // create task
     @PostMapping("/createTask")
-    public Task createTask(@RequestBody Map<String, String> body) {
-        return taskService.createTask(body.get("title"));
+    public Task createTask(@RequestBody Map<String, Object> body) {
+        String title = (String) body.get("title");
+        Boolean hasSubtasks = (Boolean) body.getOrDefault("hasSubtasks", false);
+
+        return taskService.createTask(title, hasSubtasks);
     }
+
 
     // mark task completed
     @PostMapping("/{taskId}/complete")
@@ -73,6 +79,13 @@ public class TaskController {
         return taskService.getAllCompletedDates(taskId, month);
     }
 
+    @GetMapping("/completedOveralldates")
+    public Map<String, List<LocalDate>> getLast12MonthsCompletedDates(
+            @RequestParam(required = true) Integer taskId
+    ) {
+        return taskService.getLast12MonthsDates(taskId);
+    }
+
 
     // Delete a task along with its completions
     @DeleteMapping("/{taskId}")
@@ -83,9 +96,10 @@ public class TaskController {
 
     // Edit task title
     @PutMapping("/{taskId}/edit")
-    public Task editTaskTitle(@PathVariable Integer taskId, @RequestBody Map<String, String> body) {
-        String newTitle = body.get("title");
-        return taskService.editTaskTitle(taskId, newTitle);
+    public Task editTaskTitle(@PathVariable Integer taskId, @RequestBody Map<String, Object> body) {
+        String newTitle = String.valueOf(body.get("title"));
+        Boolean hasSubtasks = (Boolean) body.get("hasSubtasks");
+        return taskService.editTaskTitle(taskId, newTitle,hasSubtasks);
     }
 
     @GetMapping("/export/tasks")
@@ -112,6 +126,16 @@ public class TaskController {
     ) throws IOException {
         taskService.importTaskCompletionsCsv(file, taskIdMapping);
         return Map.of("message", "Task completions imported successfully");
+    }
+
+    @GetMapping("/{taskId}/full-stats")
+    public TaskFullStatsResponse getTaskFullStats(@PathVariable Integer taskId) {
+        return taskService.getTaskFullStats(taskId);
+    }
+
+    @GetMapping("/getInsights")
+    public InsightsResponse getInsights() {
+        return taskService.getUserInsights();
     }
 
 

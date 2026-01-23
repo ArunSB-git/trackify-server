@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface TaskRepository extends JpaRepository<Task, Integer> {
+    List<Task> findByUserAndIsActiveTrueOrderByCreatedAtDesc(User user);
+
     List<Task> findByUserAndIsActiveTrue(User user);
 
     List<Task> findByUser(User user);
