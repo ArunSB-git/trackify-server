@@ -155,11 +155,12 @@ public class GraphService {
         LocalDate today = LocalDate.now();
         YearMonth currentMonth = YearMonth.from(today);
 
-        // 🔹 Start from Jan of current year
-        YearMonth startMonth = YearMonth.of(today.getYear(), 1);
+// 🔹 Start from 11 months ago (inclusive)
+        YearMonth startMonth = currentMonth.minusMonths(11);
 
-        long monthsBetween =
-                ChronoUnit.MONTHS.between(startMonth, currentMonth) + 1;
+// 🔹 Always last 12 months
+        long monthsBetween = 12;
+
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("MMMM yyyy", Locale.ENGLISH);
