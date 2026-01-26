@@ -13,9 +13,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final OAuth2LoginSuccessHandler successHandler;
-
-    public SecurityConfig(OAuth2LoginSuccessHandler successHandler) {
+    private final JwtUtil jwtUtil;
+    public SecurityConfig(OAuth2LoginSuccessHandler successHandler, JwtUtil jwtUtil) {
         this.successHandler = successHandler;
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -41,6 +42,11 @@ public class SecurityConfig {
                 )
                 .oauth2Login(oauth -> oauth
                         .successHandler(successHandler)
+                )
+                // 🔥 ADD JWT FILTER
+                .addFilterBefore(
+                        new JwtAuthenticationFilter(jwtUtil),
+                        org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class
                 );
 
         return http.build();
