@@ -1,6 +1,7 @@
 package com.app.service;
 
 
+import com.app.config.JwtUtil;
 import com.app.model.User;
 import com.app.repository.UserRepository;
 import jakarta.servlet.ServletException;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Date;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -21,9 +23,11 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     private String frontendUrl;
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
-    public OAuth2LoginSuccessHandler(UserRepository userRepository) {
+    public OAuth2LoginSuccessHandler(UserRepository userRepository,JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -48,7 +52,29 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             return userRepository.save(user);
         });
 
+        // Generate JWT tokens
+        String accessToken = jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
+
+        // Detect mobile app
+        String userAgent = request.getHeader("User-Agent");
+        boolean isMobileApp = userAgent != null && (
+                userAgent.contains("Android") ||
+                        userAgent.contains("iPhone") ||
+                        userAgent.contains("iPad")
+        );
+
+        if (isMobileApp) {
+            // Redirect to mobile app deep link with tokens
+            response.sendRedirect(
+                    "trackify://auth-callback?access=" + accessToken + "&refresh=" + refreshToken
+            );
+        } else {
+            // Redirect to web frontend
+            response.sendRedirect(frontendUrl + "/dashboard");
+        }
+
         // redirect to frontend after login
-        response.sendRedirect(frontendUrl + "/dashboard");
+        //response.sendRedirect(frontendUrl + "/dashboard");
     }
 }
