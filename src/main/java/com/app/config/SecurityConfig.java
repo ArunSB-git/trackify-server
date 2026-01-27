@@ -36,7 +36,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/oauth2/**",
-                                "/api/session-check"
+                                "/api/session-check",
+                                "/auth/google"   // ✅ ADD THIS
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
